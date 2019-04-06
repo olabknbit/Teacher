@@ -10,9 +10,9 @@ public class PermissionsManager {
 
     // Storage Permissions
     private static final int REQUEST_PERMS = 1;
-    private static String[] PERMISSIONS = { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    private static String[] PERMISSIONS = { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET };
 
-    public static void verifyStoragePermissions(Activity activity) {
+    public static void verifyPermissions(Activity activity) {
         Log.d("PERM", "premissions");
 
         for (String perm : PERMISSIONS) {

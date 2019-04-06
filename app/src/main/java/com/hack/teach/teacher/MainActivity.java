@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null) {
-            PermissionsManager.verifyStoragePermissions(this);
+            PermissionsManager.verifyPermissions(this);
         }
 
         final FloatingActionButton cameraActionButton = (FloatingActionButton) findViewById(R.id.fab);
