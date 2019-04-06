@@ -47,7 +47,7 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String path = FileManager.getDirPath(this.getActivity()) + "/" + filenames.get((int) id);
+        String path = FileManager.getDirPath(this.getActivity()) + filenames.get((int) id);
         if (path.contains(".mp3")) {
             MP3Player.playMP3(path);
         } else if (path.contains(".jpg")) {

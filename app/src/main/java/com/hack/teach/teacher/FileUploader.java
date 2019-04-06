@@ -29,10 +29,10 @@ public class FileUploader implements DataService {
 
     private final static String uri = "http://783dddb3.ngrok.io/convert";
 
-    private void inputStreamToMP3(InputStream inputStream) {
+    private void inputStreamToMP3(InputStream inputStream, String filepath) {
         FileOutputStream fileOutputStream;
         try {
-            File f = new File(FileManager.getDirPath(context), "sound.mp3");
+            File f = new File(FileManager.getDirPath(context), filepath + ".mp3");
             Log.d("uploader", "saving path " + f.getAbsolutePath());
             fileOutputStream = new FileOutputStream(f);
             byte[] buffer = new byte[1024];
@@ -49,8 +49,8 @@ public class FileUploader implements DataService {
     }
 
     @Override
-    public void postContentToUrl(final File file1) {
-        final File file = FileManager.compressPhotoAndGetFile(context, file1.getAbsolutePath());
+    public void postContentToUrl(final File inputFile) {
+        final File file = FileManager.compressPhotoAndGetFile(context, inputFile);
         new AsyncTask<Void, Void, Void>() {
 
             @Override
@@ -60,34 +60,18 @@ public class FileUploader implements DataService {
                 //httpPost.setHeader("Content-Type", "audio/mp3");
                 try {
                     Log.d("uploader", "starting upload");
-//                    MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-//                   // entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                        entityBuilder.addBinaryBody("file", Files.readAllBytes(file.toPath()));
-//                    }
-//
                     MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-                   // entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
                     ContentType contentType = ContentType.APPLICATION_OCTET_STREAM;
-                   // entityBuilder.setBoundary(boundary);
-                    Log.d("uploader", "filename" + file.getAbsolutePath());
                     entityBuilder.addPart("file", new FileBody(file, contentType, file.getAbsolutePath()));
 
                     HttpEntity entity = entityBuilder.build();
-
-
                     httpPost.setEntity(entity);
-
-
-                    Log.d("uploader", "entity" + entityBuilder.build().toString());
-                    Log.d("uploader", "request" + httpPost.toString());
 
                     HttpResponse response = client.execute(httpPost);
                     Log.d("uploader", "got response");
                     Log.d("uploader", response.getEntity().toString());
                     HttpEntity httpEntity = response.getEntity();
-                    inputStreamToMP3(httpEntity.getContent());
+                    inputStreamToMP3(httpEntity.getContent(), FileManager.getName(inputFile));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

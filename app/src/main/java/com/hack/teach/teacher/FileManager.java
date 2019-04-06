@@ -13,7 +13,11 @@ import java.io.IOException;
 
 public class FileManager {
     public static String getDirPath(Context context) {
-        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + '/';
+    }
+
+    public static String getName(File file) {
+        return file.getName().replace(".jpg", "").replace(".mp3", "");
     }
 
     public static File getOutputFile(Context context, String filename) throws IOException {
@@ -24,18 +28,19 @@ public class FileManager {
         return imgFile;
     }
 
-    public static File compressPhotoAndGetFile(Context context, String filePath) {
+    public static File compressPhotoAndGetFile(Context context, File file) {
+        String inputFilename = file.getAbsolutePath();
         try {
-            String filename = new File(filePath).getName() + "lolx";
-            final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-            Log.d("converter", filePath);
-            final FileOutputStream out = new FileOutputStream(getOutputFile(context, filename));
+            String outputFilename = FileManager.getName(file) + "_lolx.jpg";
+            final Bitmap bitmap = BitmapFactory.decodeFile(inputFilename);
+            Log.d("converter", outputFilename);
+            final FileOutputStream out = new FileOutputStream(getOutputFile(context, outputFilename));
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out);
             out.flush();
             out.close();
 
-            return new File(getDirPath(context) + filename);
+            return new File(getDirPath(context) + outputFilename);
         } catch (IOException e) {
             e.printStackTrace();
         }
