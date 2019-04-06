@@ -18,24 +18,19 @@ import java.util.ArrayList;
  */
 public class ListActivityFragment extends ListFragment implements AdapterView.OnItemClickListener {
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        return view;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     private ArrayList<String> fetchImages() {
-
         ArrayList<String> filenames = new ArrayList<>();
         String path = this.getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
 
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-        for (int i = 0; i < files.length; i++) {
-
-            String file_name = files[i].getName();
-            // you can store name to arraylist and use it later
+        for (File file : files) {
+            String file_name = file.getName();
             filenames.add(file_name);
         }
         return filenames;
@@ -45,7 +40,7 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, fetchImages());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, fetchImages());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
     }
