@@ -1,10 +1,8 @@
 package com.hack.teach.teacher;
 
 import android.app.ListFragment;
-import android.graphics.Bitmap;
-import android.os.Environment;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +45,7 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, fetchImages());
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, fetchImages());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
     }
