@@ -2,7 +2,6 @@ package com.hack.teach.teacher;
 
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
 
     private ArrayList<String> fetchFiles() {
         filenames = new ArrayList<>();
-        String path = getDirPath();
+        String path = FileManager.getDirPath(this.getActivity());
 
         File directory = new File(path);
         File[] files = directory.listFiles();
@@ -35,10 +34,6 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
             filenames.add(file_name);
         }
         return filenames;
-    }
-
-    private String getDirPath() {
-        return this.getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
     }
 
 
@@ -52,7 +47,11 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String path = getDirPath() + "/" + filenames.get((int) id);
-        MP3Player.playMP3(path);
+        String path = FileManager.getDirPath(this.getActivity()) + "/" + filenames.get((int) id);
+        if (path.contains(".mp3")) {
+            MP3Player.playMP3(path);
+        } else if (path.contains(".jpg")) {
+            new FileUploader(this.getActivity()).postContentToUrl(new File(path));
+        }
     }
 }
