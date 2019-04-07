@@ -28,7 +28,7 @@ public class FileUploader {
 
     }
 
-    private final static String uri = "http://783dddb3.ngrok.io/convert";
+    private final static String uri = "http://e667c1d1.ngrok.io/convert";
 
     private void inputStreamToMP3(InputStream inputStream, String filepath) {
         FileOutputStream fileOutputStream;

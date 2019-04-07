@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class MP3Player {
 
-    public static void playMP3(String filePath) {
+    public static MediaPlayer playMP3(String filePath) {
 
         MediaPlayer mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -21,6 +21,7 @@ public class MP3Player {
         }
 
         mediaPlayer.start();
+        return mediaPlayer;
     }
 
 }
