@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class ListActivityFragment extends ListFragment implements AdapterView.OnItemClickListener {
     ArrayList<String> filenames;
+    ArrayAdapter<String> adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,7 +25,7 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
 
     private ArrayList<String> fetchFiles() {
         filenames = new ArrayList<>();
-        String path = FileManager.getDirPath(this.getActivity());
+        String path = FileManager.getMP3sDirPath(this.getActivity());
 
         File directory = new File(path);
         File[] files = directory.listFiles();
@@ -36,22 +37,33 @@ public class ListActivityFragment extends ListFragment implements AdapterView.On
         return filenames;
     }
 
+    private void uploadFiles(){
+        String path = FileManager.getPicturesDirPath(this.getActivity());
+
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+
+        for (File file : files) {
+            new FileUploader(this.getActivity()).postContentToUrl(file);
+        }
+    }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, fetchFiles());
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, fetchFiles());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
+
+//        uploadFiles();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String path = FileManager.getDirPath(this.getActivity()) + filenames.get((int) id);
+        String path = FileManager.getMP3sDirPath(this.getActivity()) + filenames.get((int) id);
         if (path.contains(".mp3")) {
             MP3Player.playMP3(path);
-        } else if (path.contains(".jpg")) {
-            new FileUploader(this.getActivity()).postContentToUrl(new File(path));
         }
     }
 }

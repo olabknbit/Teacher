@@ -3,7 +3,6 @@ package com.hack.teach.teacher;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,12 +18,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+
+    ListActivityFragment laf = (ListActivityFragment) getFragmentManager().findFragmentById(R.id.fragment);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +42,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 filenamePopUp();
-            }
-        });
-
-        FloatingActionButton listActionButton = (FloatingActionButton) findViewById(R.id.list_ac);
-        listActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispatchListActivityIntent();
             }
         });
     }
@@ -104,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    public void updateFragment() {
+//        TODO olab implement somehowwww
+    }
+
     static final int REQUEST_TAKE_PHOTO = 1;
 
     String mCurrentPhotoPath;
@@ -138,28 +134,31 @@ public class MainActivity extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
+                Log.d("uri", photoURI.toString());
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
 
-    private void dispatchListActivityIntent() {
-        Intent listActivityIntent = new Intent(this, ListActivity.class);
-        // Ensure that there's a camera activity to handle the intent
-        startActivity(listActivityIntent);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
+        Log.d("onacres", requestCode + " " + String.valueOf(resultCode == RESULT_OK));
+        if (REQUEST_TAKE_PHOTO == requestCode && resultCode == RESULT_OK) {
+            Log.d("currentphotopath", mCurrentPhotoPath);
             File imgFile = new File(mCurrentPhotoPath);
             if (imgFile.exists()) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                ImageView myImage = (ImageView) findViewById(R.id.imageView1);
-                myImage.setImageBitmap(myBitmap);
+                String path = FileManager.getPicturesDirPath(this) + FileManager.getName(imgFile) + ".jpg";
+                Log.d("path", path);
+                Bundle extras = data.getExtras();
+                if (extras != null) {
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    new FileUploader(this).postContentToUrl(imageBitmap, path, laf);
+                } else {
+                    new FileUploader(this).postContentToUrl(imgFile);
+                    Log.d("wft", "extras null");
+                }
             }
         }
-
     }
 }

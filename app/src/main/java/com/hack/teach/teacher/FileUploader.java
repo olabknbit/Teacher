@@ -2,6 +2,7 @@ package com.hack.teach.teacher;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,7 +20,7 @@ import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
 import cz.msebera.android.httpclient.entity.mime.content.FileBody;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
-public class FileUploader implements DataService {
+public class FileUploader {
     private Context context;
 
     public FileUploader(Context context) {
@@ -32,7 +33,7 @@ public class FileUploader implements DataService {
     private void inputStreamToMP3(InputStream inputStream, String filepath) {
         FileOutputStream fileOutputStream;
         try {
-            File f = new File(FileManager.getDirPath(context), filepath + ".mp3");
+            File f = new File(FileManager.getMP3sDirPath(context), filepath + ".mp3");
             Log.d("uploader", "saving path " + f.getAbsolutePath());
             fileOutputStream = new FileOutputStream(f);
             byte[] buffer = new byte[1024];
@@ -48,7 +49,6 @@ public class FileUploader implements DataService {
         }
     }
 
-    @Override
     public void postContentToUrl(final File inputFile) {
         final File file = FileManager.compressPhotoAndGetFile(context, inputFile);
         new AsyncTask<Void, Void, Void>() {
@@ -57,7 +57,40 @@ public class FileUploader implements DataService {
             protected Void doInBackground(Void... voids) {
                 HttpClient client = HttpClientBuilder.create().build();
                 HttpPost httpPost = new HttpPost(uri);
-                //httpPost.setHeader("Content-Type", "audio/mp3");
+                try {
+                    Log.d("uploader", "starting upload");
+                    Log.d("uploader", file.getAbsolutePath());
+                    MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+                    ContentType contentType = ContentType.APPLICATION_OCTET_STREAM;
+                    entityBuilder.addPart("file", new FileBody(file, contentType, file.getAbsolutePath()));
+
+                    HttpEntity entity = entityBuilder.build();
+                    httpPost.setEntity(entity);
+
+                    HttpResponse response = client.execute(httpPost);
+                    Log.d("uploader", "got response");
+                    Log.d("uploader", response.getEntity().toString());
+                    HttpEntity httpEntity = response.getEntity();
+                    inputStreamToMP3(httpEntity.getContent(), FileManager.getName(inputFile));
+                    FileManager.deletePhotoFromMemory(context, file.getAbsolutePath());
+                    FileManager.deletePhotoFromMemory(context, inputFile.getAbsolutePath());
+                    ((MainActivity) context).updateFragment();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    public void postContentToUrl(final Bitmap bitmap, final String filename, final ListActivityFragment laf) {
+        Log.d("post", "start file upload");
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                File file = FileManager.compressPhotoAndGetFile(context, bitmap, filename);
+                HttpClient client = HttpClientBuilder.create().build();
+                HttpPost httpPost = new HttpPost(uri);
                 try {
                     Log.d("uploader", "starting upload");
                     MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
@@ -71,13 +104,13 @@ public class FileUploader implements DataService {
                     Log.d("uploader", "got response");
                     Log.d("uploader", response.getEntity().toString());
                     HttpEntity httpEntity = response.getEntity();
-                    inputStreamToMP3(httpEntity.getContent(), FileManager.getName(inputFile));
+                    inputStreamToMP3(httpEntity.getContent(), filename);
+                    laf.adapter.notifyDataSetChanged();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return null;
             }
         }.execute();
-
     }
 }
