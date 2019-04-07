@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateFragment() {
-//        TODO olab implement somehowwww
+
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;

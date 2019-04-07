@@ -72,8 +72,10 @@ public class FileUploader {
                     Log.d("uploader", response.getEntity().toString());
                     HttpEntity httpEntity = response.getEntity();
                     inputStreamToMP3(httpEntity.getContent(), FileManager.getName(inputFile));
+                    Log.d("uploader", "deleting jpgs");
                     FileManager.deletePhotoFromMemory(context, file.getAbsolutePath());
                     FileManager.deletePhotoFromMemory(context, inputFile.getAbsolutePath());
+                    Log.d("uploader", "updating fragment");
                     ((MainActivity) context).updateFragment();
                 } catch (IOException e) {
                     e.printStackTrace();
