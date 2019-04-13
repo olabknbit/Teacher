@@ -4,3 +4,6 @@ Ola the Teacher is an app that helps you study: you take a photo of your notes w
 
 
 Code in this repo is an Android client made as a part of a project for a Facebook Warsaw Hackathon 2019. The server is located at: https://github.com/olagacek/OlaTheTeacher/
+
+
+Team members: Aleksandra Byczynska (olabknbit), Aleksandra Gacek (olagacek), Marchin Michorzewski (nhemisirmkow)
